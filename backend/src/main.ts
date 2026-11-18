@@ -19,8 +19,14 @@ async function bootstrap() {
     ...(process.env.RENDER ? {} : { httpsOptions: opcionesTls() }),
   });
 
-  configureApi(app);
-  app.enableShutdownHooks();
+configureApi(app);
+
+app.enableCors({
+  origin: 'https://gymtrack-roan.vercel.app',
+  credentials: true,
+});
+
+app.enableShutdownHooks();
 
   await app.listen(
     Number(process.env.PORT || 3000),
