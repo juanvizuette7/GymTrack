@@ -1,3 +1,4 @@
+
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
@@ -8,10 +9,20 @@ import { CatalogoInicial1794528000000 } from './migrations/002-catalogo';
 
 export function databaseOptions(): PostgresConnectionOptions {
   return {
-    type: 'postgres', ...databaseConfig(), entities,
-    migrations: [EsquemaInicial1794441600000, CatalogoInicial1794528000000],
-    synchronize: false, migrationsRun: false, logging: false,
-    extra: { options: '-c timezone=UTC' }
+    type: 'postgres',
+    ...databaseConfig(),
+    entities,
+    migrations: [
+      EsquemaInicial1794441600000,
+      CatalogoInicial1794528000000,
+    ],
+    synchronize: false,
+    migrationsRun: false,
+    logging: false,
+    ssl: process.env.RENDER
+      ? { rejectUnauthorized: true }
+      : false,
+    extra: { options: '-c timezone=UTC' },
   };
 }
 
