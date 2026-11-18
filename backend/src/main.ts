@@ -1,3 +1,4 @@
+
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -13,16 +14,27 @@ export function configureApi(app: INestApplication) {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { logger: false, httpsOptions: opcionesTls() });
+  const app = await NestFactory.create(AppModule, {
+    logger: false,
+    ...(process.env.RENDER ? {} : { httpsOptions: opcionesTls() }),
+  });
+
   configureApi(app);
   app.enableShutdownHooks();
-  await app.listen(3000, 'localhost');
-  console.info('API HTTPS disponible en https://localhost:3000/api.');
+
+  await app.listen(
+    Number(process.env.PORT || 3000),
+    process.env.RENDER ? '0.0.0.0' : 'localhost',
+  );
+
+  console.info('API GymTrack iniciada correctamente.');
 }
 
 if (require.main === module) {
   bootstrap().catch(() => {
-    console.error('No se pudo iniciar NestJS. Revisa los certificados HTTPS, la configuración y PostgreSQL.');
+    console.error(
+      'No se pudo iniciar NestJS. Revisa la configuración y PostgreSQL.',
+    );
     process.exitCode = 1;
   });
 }
